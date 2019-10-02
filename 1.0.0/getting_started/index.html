@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        <meta name="author" content="Matrix Foundation CIC">
+        
+        <link rel="shortcut icon" href="../img/favicon.ico">
+        <title>Getting Started - Matrix Appservice Slack</title>
+        <link href="../css/bootstrap-custom.min.css" rel="stylesheet">
+        <link href="../css/font-awesome.min.css" rel="stylesheet">
+        <link href="../css/base.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/purebasic.min.css">
+        <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+            <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+        <![endif]-->
+
+        <script src="../js/jquery-1.10.2.min.js" defer></script>
+        <script src="../js/bootstrap-3.0.3.min.js" defer></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+        <script>hljs.initHighlightingOnLoad();</script> 
+    </head>
+
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+            <div class="container">
+
+                <!-- Collapsed navigation -->
+                <div class="navbar-header">
+                    <!-- Expander button -->
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="..">Matrix Appservice Slack</a>
+                </div>
+
+                <!-- Expanded navigation -->
+                <div class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li >
+                                <a href="..">Home</a>
+                            </li>
+                            <li >
+                                <a href="../features/">Features</a>
+                            </li>
+                            <li class="dropdown active">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Guide <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+                                    
+<li class="active">
+    <a href="./">Getting Started</a>
+</li>
+                                    
+<li >
+    <a href="../link_channels/">Linking Channels</a>
+</li>
+                                    
+<li >
+    <a href="../datastores/">Datastores</a>
+</li>
+                                </ul>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <a href="#" data-toggle="modal" data-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                            <li >
+                                <a rel="next" href="../features/">
+                                    <i class="fa fa-arrow-left"></i> Previous
+                                </a>
+                            </li>
+                            <li >
+                                <a rel="prev" href="../link_channels/">
+                                    Next <i class="fa fa-arrow-right"></i>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="https://github.com/matrix-org/matrix-appservice-slack/edit/master/docs/getting_started.md"><i class="fa fa-github"></i> Edit on GitHub</a>
+                            </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+                <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
+    <ul class="nav bs-sidenav">
+        <li class="main active"><a href="#getting-started">Getting Started</a></li>
+            <li><a href="#installation">Installation</a></li>
+            <li><a href="#how-it-works">How it Works:</a></li>
+            <li><a href="#setup">Setup</a></li>
+            <li><a href="#proxying">Proxying</a></li>
+    </ul>
+</div></div>
+                <div class="col-md-9" role="main">
+
+<h1 id="getting-started">Getting Started</h1>
+<p>In this guide we will setup the bridge connected to your homeserver. This guide
+will walk through the most common settings, other options are documented in
+the <code>config.sample.yaml</code> file.</p>
+<h2 id="installation">Installation</h2>
+<p>These instructions assume you are using Syanpse 1.4.0+. They should
+work for older releases and other homeservers, but configruation may vary.</p>
+<h3 id="from-source">From source</h3>
+<div class="codehilite"><pre><span></span>$ git clone https://github.com/matrix-org/matrix-appservice-slack.git
+$ <span class="nb">cd</span> Matrix-appservice-slack
+$ npm install
+$ npm run build
+</pre></div>
+
+
+<h3 id="with-docker">With Docker</h3>
+<div class="codehilite"><pre><span></span>$ docker pull matrixdotorg/matrix-appservice-slack:latest
+</pre></div>
+
+
+<h2 id="how-it-works">How it Works:</h2>
+<p>The bridge listens to events using the Slack RTM API over websockets, and to
+Matrix events on a port that the homeserver sends events to. This tutorial will
+walk you through configuring your homeserver and Slack to send messages to this
+bridge and setting up the api so this bridge can relay those message (all
+messages) to the other bridged channel. For the sake of this tutorial, we will
+assume your homeserver is hosted on the same server as this bridge at the port
+<code>8008</code> (http://localhost:8008).</p>
+<p>If you&rsquo;ve set up other bridges, you&rsquo;re probably familiar with the link used
+to reach your homeserver, the &ldquo;homeserver url&rdquo;. This is the same URL. This
+is the same port. No problem! Multiple bridges can plug into the same
+homeserver url without conflicting with each other.</p>
+<p>NOTE: If your bridge and homeserver run on different machines, you will need
+to introduce proxying into the mix, which is beyond the scope of these docs.
+There are some really awesome and kind people in the Matrix community. If you&rsquo;re
+ever stuck, you can post a question in the 
+<a href="https://matrix.to/#/#bridges:matrix.org">Matrix Bridging room</a>.</p>
+<h2 id="setup">Setup</h2>
+<ol>
+<li>
+<p>Create a new Matrix room to act as the administration control room. Note its
+   internal room ID (EX: !abcdefg12345hijk:coolserver.com).</p>
+</li>
+<li>
+<p>Decide on a spare local TCP port number to use. It will listen for messages
+   from Matrix and needs to be visible to the homeserver. Take care to configure
+   firewalls appropriately. This ports will be notated as <code>$MATRIX_PORT</code> in
+   the remaining instructions.</p>
+</li>
+<li>
+<p>Create a <code>config.yaml</code> file for global configuration. There is a sample
+   one to begin with in <code>config/config.sample.yaml</code>. You should copy and
+   edit as appropriate. The required and optional values are flagged in the config.</p>
+</li>
+<li>
+<p>See <a href="../datastores/">datastores</a> on how to setup a database with the bridge.</p>
+</li>
+<li>
+<p>Generate the appservice registration file. This will be used by the
+   Matrix homeserver. Here, you must specify the direct link the
+   <strong>Matrix Homserver</strong> can use to access the bridge, including the Matrix
+   port it will send messages through (if this bridge runs on the same
+   machine you can use <code>localhost</code> as the <code>$HOST</code> name):</p>
+<p><code>$ npm start -- -r -c config.yaml -u "http://$HOST:$MATRIX_PORT"</code>
+   or with docker:</p>
+</li>
+</ol>
+<div class="codehilite"><pre><span></span>$ docker run -v /path/to/config/:/config/ matrixdotorg/matrix-appservice-slack <span class="se">\ </span>
+    -r -c /config/config.yaml -u <span class="s2">&quot;http://</span><span class="nv">$HOST</span><span class="s2">:</span><span class="nv">$MATRIX_PORT</span><span class="s2">&quot;</span> -f /config/slack.yaml
+</pre></div>
+
+
+<ol start="6">
+<li>
+<p>Start the actual application service:</p>
+<p><code>$ npm start -c config.yaml -p $MATRIX_PORT</code>
+   or with docker:</p>
+<p><code>$ docker run -v /path/to/config/:/config/ matrixdotorg/matrix-appservice-slack</code></p>
+</li>
+<li>
+<p>Copy the newly-generated <code>slack-registration.yaml</code> file to your Matrix
+   homeserver. Add the registration file to your homeserver config (default
+   <code>homeserver.yaml</code>):</p>
+</li>
+</ol>
+<div class="codehilite"><pre><span></span><span class="nt">app_service_config_files</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">...</span>
+    <span class="p p-Indicator">-</span> <span class="s">&quot;/path/to/slack-registration.yaml&quot;</span>
+</pre></div>
+
+
+<p>Don&rsquo;t forget - it has to be a YAML list of strings, not just a single string.</p>
+<p>Restart your homeserver to have it reread the config file an establish a
+   connection to the bridge.</p>
+<ol start="8">
+<li>
+<p>Invite the bridge bot user into the admin room, so it can actually see and
+   respond to commands. The bot&rsquo;s user ID is formed from the <code>sender_localpart</code>
+   field of the registration file, and the homeserver&rsquo;s domain name. For example:</p>
+<p><code>/invite @slackbot:my.server.here</code></p>
+</li>
+</ol>
+<p>NOTE: At the time of writing, Riot does not recognize the Slack bot. This is
+okay. The bot <em>is there</em>. If Riot asks if you&rsquo;re
+sure you want to invite @slackbot, just say yes.</p>
+<p>The bridge bot will stay offline for most of the time. This is normal. You
+will know if the bridge is working (and that your homeserver is properly
+connected) if it accepts your invitation. You can expect the bot to accept
+within 45 seconds of being invited. If it never accepts the invitation,
+check your bridge&rsquo;s logs and review the above steps.</p>
+<p>The bridge itself should now be running. Congrats!</p>
+<p>To actually use it, you will need to configure some linked channels, see
+<a href="../link_channels/">linking channels</a>.</p>
+<h2 id="proxying">Proxying</h2>
+<p>If you want to host this bridge on a different server than your homeserver, you will have
+to proxy the bridge so both the Matrix port (specified when creating your registration file
+through the -u property) and the Slack port (specified by the inbound_uri prefix in your
+config file) can be reached. This way both the Matrix homeserver and the Slack API can reach
+your bridge.</p></div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script>
+            var base_url = "..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../js/base.js" defer></script>
+        <script src="../search/main.js" defer></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="Search Modal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title" id="exampleModalLabel">Search</h4>
+            </div>
+            <div class="modal-body">
+                <p>
+                    From here you can search these documents. Enter
+                    your search terms below.
+                </p>
+                <form role="form">
+                    <div class="form-group">
+                        <input type="text" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="Keyboard Shortcuts Modal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title" id="exampleModalLabel">Keyboard Shortcuts</h4>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>

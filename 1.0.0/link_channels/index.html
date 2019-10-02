@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        <meta name="author" content="Matrix Foundation CIC">
+        
+        <link rel="shortcut icon" href="../img/favicon.ico">
+        <title>Linking Channels - Matrix Appservice Slack</title>
+        <link href="../css/bootstrap-custom.min.css" rel="stylesheet">
+        <link href="../css/font-awesome.min.css" rel="stylesheet">
+        <link href="../css/base.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/purebasic.min.css">
+        <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+            <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+        <![endif]-->
+
+        <script src="../js/jquery-1.10.2.min.js" defer></script>
+        <script src="../js/bootstrap-3.0.3.min.js" defer></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+        <script>hljs.initHighlightingOnLoad();</script> 
+    </head>
+
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+            <div class="container">
+
+                <!-- Collapsed navigation -->
+                <div class="navbar-header">
+                    <!-- Expander button -->
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="..">Matrix Appservice Slack</a>
+                </div>
+
+                <!-- Expanded navigation -->
+                <div class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li >
+                                <a href="..">Home</a>
+                            </li>
+                            <li >
+                                <a href="../features/">Features</a>
+                            </li>
+                            <li class="dropdown active">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Guide <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+                                    
+<li >
+    <a href="../getting_started/">Getting Started</a>
+</li>
+                                    
+<li class="active">
+    <a href="./">Linking Channels</a>
+</li>
+                                    
+<li >
+    <a href="../datastores/">Datastores</a>
+</li>
+                                </ul>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <a href="#" data-toggle="modal" data-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                            <li >
+                                <a rel="next" href="../getting_started/">
+                                    <i class="fa fa-arrow-left"></i> Previous
+                                </a>
+                            </li>
+                            <li >
+                                <a rel="prev" href="../datastores/">
+                                    Next <i class="fa fa-arrow-right"></i>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="https://github.com/matrix-org/matrix-appservice-slack/edit/master/docs/link_channels.md"><i class="fa fa-github"></i> Edit on GitHub</a>
+                            </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+                <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
+    <ul class="nav bs-sidenav">
+        <li class="main active"><a href="#linking-channels">Linking Channels</a></li>
+            <li><a href="#rtm-api">RTM API</a></li>
+            <li><a href="#webhooks">Webhooks</a></li>
+            <li><a href="#unlink-channels">Unlink Channels</a></li>
+            <li><a href="#mattermost">Mattermost</a></li>
+    </ul>
+</div></div>
+                <div class="col-md-9" role="main">
+
+<h1 id="linking-channels">Linking Channels</h1>
+<p>This bridge allows linking together pairs of Matrix rooms and Slack channels,
+relaying messages said by people in one side into the other. To create a link,
+first the individual Matrix room and Slack channel need to be created, and then
+a command needs to be issued in the administration console room to add the link
+to the bridge&rsquo;s database.</p>
+<h2 id="rtm-api">RTM API</h2>
+<p>This is the newer and recommended way to use the bridge.</p>
+<ol>
+<li>
+<p>Add a custom app to your Slack team/workspace by visiting https://api.Slack.com/apps
+   and clicking on <code>Create New App</code>.</p>
+</li>
+<li>
+<p>Name the app &amp; select the team/workspace this app will belong to.</p>
+</li>
+<li>
+<p>Click on <code>bot users</code> and add a new bot user. We will use this account to bridge the
+   the rooms.</p>
+</li>
+<li>
+<p>Click on <code>Install App</code> and <code>Install App to Workspace</code>. Note the access tokens show.
+   You will need the <code>Bot User OAuth Access Token</code> and if you want to bridge files, the
+   <code>OAuth Access Token</code> whenever you link a room.</p>
+</li>
+<li>
+<p>For each channel you would like to bridge, perform the following steps:</p>
+</li>
+<li>
+<p>Create a Matrix room in the usual manner for your client. Take a note of its
+      Matrix room ID - it will look something like <code>!aBcDeF:example.com</code>.</p>
+</li>
+<li>
+<p>Invite the Matrix bot user to the Matrix channel you would like to bridge.</p>
+<p><code>/invite @Slackbot:my.server.here</code></p>
+<p>This is the same command used to invite the bot to the Admin Control Room. Note
+   that you may have to wait for the Slackbot to accept the invitation.</p>
+</li>
+<li>
+<p>Invite the Slack bot user to the Slack channel you would like to bridge.</p>
+<p><code>/invite @bot-user-name</code></p>
+<p>You will also need to determine the &ldquo;channel ID&rdquo; that Slack uses to identify
+   the channel. Right-click your channel name in Slack and select &ldquo;Copy Link&rdquo;.
+   The channel id is the last argument in the url
+   (<code>https://XXX.Slack.com/messages/&lt;channel id&gt;/</code>)</p>
+</li>
+<li>
+<p>Issue a <code>link</code> command in the administration control room with these
+      collected values as arguments:</p>
+<p><code>link --channel_id CHANNELID --room !the-matrix:room.id --slack_bot_token xoxb-xxxxxxxxxx-xxxxxxxxxxxxxxxxxxxx</code></p>
+</li>
+</ol>
+<h2 id="webhooks">Webhooks</h2>
+<p>Linking rooms with webhooks is not the recommended way for most situations,
+although it can be useful for single channels or if you are using Mattermost.</p>
+<ol>
+<li>
+<p>Create a Matrix room in the usual manner for your client. Take a note of its
+   Matrix room ID - it will look something like <code>!aBcDeF:example.com</code>.</p>
+</li>
+<li>
+<p>Create a Slack channel in the usual manner.</p>
+</li>
+<li>
+<p>Add an &ldquo;Incoming WebHooks&rdquo; integration to the Slack channel and take a note
+   of its &ldquo;Webhook URL&rdquo; from the integration settings in Slack - it will look
+   something like <code>https://hooks.Slack.com/services/ABC/DEF/123</code>.</p>
+</li>
+<li>
+<p>Add an &ldquo;Outgoing WebHooks&rdquo; integration to the Slack channel and take a note
+   of its <code>token</code> field. Add a URL to this web hook pointing back at the
+   application service port you configured during setup.</p>
+</li>
+</ol>
+<p>You will also need to determine the &ldquo;channel ID&rdquo; that Slack uses to identify
+   the channel. Unfortunately, it is not easily obtained from the Slack UI. The
+   easiest way to do this is to send a message from Slack to the bridge; the
+   bridge will log the channel ID as part of the unrecognised message output.
+   You can then take note of the <code>channel_id</code> field.</p>
+<ol>
+<li>
+<p>Issue a <code>link</code> command in the administration control room with these
+   collected values as arguments:</p>
+<p><code>link --channel_id CHANNELID --room !the-matrix:room.id --webhook_url https://hooks.Slack.com/services/ABC/DEF/123</code></p>
+</li>
+</ol>
+<h2 id="unlink-channels">Unlink Channels</h2>
+<p>If you ever want to unlink a channel, you can issue an <code>unlink</code> command:</p>
+<div class="codehilite"><pre><span></span><span class="k">unlink</span> <span class="o">--</span><span class="nv">room</span> <span class="nv">matrix_room_id</span>
+</pre></div>
+
+
+<h2 id="mattermost">Mattermost</h2>
+<p>Because Mattermost&rsquo;s webhook APIs are Slack-compatible, the Matrix &lt;&ndash;&gt; Slack bridge
+also works with it. The webhook configuration is very similar to Slack&rsquo;s and is
+documented on <a href="https://www.mattermost.org/webhooks/">Mattermost&rsquo;s website</a>.</p></div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script>
+            var base_url = "..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../js/base.js" defer></script>
+        <script src="../search/main.js" defer></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="Search Modal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title" id="exampleModalLabel">Search</h4>
+            </div>
+            <div class="modal-body">
+                <p>
+                    From here you can search these documents. Enter
+                    your search terms below.
+                </p>
+                <form role="form">
+                    <div class="form-group">
+                        <input type="text" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="Keyboard Shortcuts Modal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title" id="exampleModalLabel">Keyboard Shortcuts</h4>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>
